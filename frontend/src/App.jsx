@@ -5,6 +5,7 @@ import SignUp from "./pages/Auth/Signup";
 import Home from "./pages/Dashboard/Home";
 import Income from "./pages/Dashboard/Income";
 import Expense from "./pages/Dashboard/Expense";
+import SecurityPage from "./pages/SecurityPage";
 import UserProvider from './context/userContext';
 import { Toaster } from "react-hot-toast";
 
@@ -19,7 +20,8 @@ const App = () => {
           <Route path='/signUp' exact element={<SignUp/>}/>          
           <Route path='/dashboard' exact element={<Home/>}/>          
           <Route path='/income' exact element={<Income/>}/>          
-          <Route path='/expense' exact element={<Expense/>}/>          
+          <Route path='/expense' exact element={<Expense/>}/>
+          <Route path='/security/*' element={<SecurityPage/>}/>          
         </Routes>
       </Router>
     </div>

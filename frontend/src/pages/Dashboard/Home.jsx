@@ -49,8 +49,8 @@ const Home = () => {
   const slicedIncomeTransactions = last60DaysIncomeTransactions.slice(0, 4);
 
   const last30DayExpenseTransactions =
-    Array.isArray(dashboardData?.last30DayExpense?.transactions)
-      ? dashboardData.last30DayExpense.transactions
+    Array.isArray(dashboardData?.last30DaysExpense?.transactions)
+      ? dashboardData.last30DaysExpense.transactions
       : [];
 
   const recentTransactions =

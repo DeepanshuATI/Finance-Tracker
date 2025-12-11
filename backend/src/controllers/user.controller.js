@@ -6,6 +6,13 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import dotenv from "dotenv";
 dotenv.config();
 
+// Shared cookie configuration for consistent token handling
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+  maxAge: 2 * 24 * 60 * 60 * 1000, // 2 days
+});
 
 const generateAccessAndRefereshTokens = async(userId) =>{
   try {
@@ -68,13 +75,8 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  // Cookie options - use secure only in production (https)
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production", // Secure only in prod
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days cookie expiry
-  };
+  // Use shared cookie configuration
+  const cookieOptions = getCookieOptions();
 
   return res
     .status(201)
@@ -129,15 +131,13 @@ const loginUser = asyncHandler(async (req, res) =>{
 
   const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-  const options = {
-      httpOnly: true,
-      secure: true
-  }
+  // Use shared cookie configuration
+  const cookieOptions = getCookieOptions();
 
   return res
   .status(200)
-  .cookie("accessToken", accessToken, options)
-  .cookie("refreshToken", refreshToken, options)
+  .cookie("accessToken", accessToken, cookieOptions)
+  .cookie("refreshToken", refreshToken, cookieOptions)
   .json(
       new ApiResponse(
           200, 
@@ -165,15 +165,13 @@ const logoutUser = asyncHandler(async(req, res) => {
       }
   )
 
-  const options = {
-      httpOnly: true,
-      secure: true
-  }
+  // Use shared cookie configuration
+  const cookieOptions = getCookieOptions();
 
   return res
   .status(200)
-  .clearCookie("accessToken", options)
-  .clearCookie("refreshToken", options)
+  .clearCookie("accessToken", cookieOptions)
+  .clearCookie("refreshToken", cookieOptions)
   .json(new ApiResponse(200, {}, "User logged Out"))
 });
 
@@ -203,17 +201,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
           
       }
   
-      const options = {
-          httpOnly: true,
-          secure: true
-      }
+      // Use shared cookie configuration
+      const cookieOptions = getCookieOptions();
   
       const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
   
       return res
       .status(200)
-      .cookie("accessToken", accessToken, options)
-      .cookie("refreshToken", newRefreshToken, options)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", newRefreshToken, cookieOptions)
       .json(
           new ApiResponse(
               200, 

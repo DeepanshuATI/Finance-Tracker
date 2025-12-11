@@ -12,6 +12,7 @@ import analyticsRoutes from './routes/analytic.route.js';
 import dashboardRoutes from './routes/dashboard.route.js';
 import incomeRoutes from './routes/income.route.js';
 import transactionRoutes from "./routes/transaction.route.js";
+import securityRoutes from './routes/security.route.js';
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -43,8 +44,14 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/incomes', incomeRoutes);
 app.use('/api/v1/transactions', transactionRoutes);
 
+// Security demonstration routes (conditional based on environment)
+if (process.env.ENABLE_SECURITY_DEMOS !== 'false') {
+    app.use('/api/v1/security', securityRoutes);
+    console.log('🔓 Security demonstration endpoints enabled');
+}
+
 // Serve uploaded files
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Error handling middleware
 app.use(notFoundHandler);

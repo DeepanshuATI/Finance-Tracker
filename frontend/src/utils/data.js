@@ -1,4 +1,4 @@
-import { LuLayoutDashboard, LuHandCoins, LuWalletMinimal, LuLogOut } from "react-icons/lu";
+import { LuLayoutDashboard, LuHandCoins, LuWalletMinimal, LuLogOut, LuShield } from "react-icons/lu";
 export const SIDE_MENU_DATA = [{
     id: "01",
     label:"Dashboard",
@@ -22,6 +22,14 @@ export const SIDE_MENU_DATA = [{
 
   {
     id:"04",
+    label:"Security Demos",
+    icon: LuShield,
+    path:"/security",
+    badge: "Educational"
+  },
+
+  {
+    id:"05",
     label:"LogOut",
     icon:LuLogOut,
     path:"logout",

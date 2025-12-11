@@ -114,7 +114,7 @@ export const deleteExpense = asyncHandler(async (req, res) => {
 
 import { Expense } from "../models/expense.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import xlsx from "xlsx";
+import XlsxPopulate from "xlsx-populate";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
@@ -183,20 +183,29 @@ export const downloadExpenseExcel = asyncHandler(async (req, res) => {
     try {
         const expenses = await Expense.find({ user: userId }).sort({ date: -1 });
 
-        const data = expenses.map((item) => ({
-            Description: item.description,
-            Amount: item.amount,
-            Category: item.category,
-            Date: new Date(item.date).toLocaleDateString("en-US"),
-        }));
+        // Create a new workbook
+        const workbook = await XlsxPopulate.fromBlankAsync();
+        const sheet = workbook.sheet(0);
 
-        const wb = xlsx.utils.book_new();
-        const ws = xlsx.utils.json_to_sheet(data);
-        xlsx.utils.book_append_sheet(wb, ws, "Expenses");
+        // Set headers
+        sheet.cell("A1").value("Description");
+        sheet.cell("B1").value("Amount");
+        sheet.cell("C1").value("Category");
+        sheet.cell("D1").value("Date");
+
+        // Add data rows
+        expenses.forEach((item, index) => {
+            const row = index + 2;
+            sheet.cell(`A${row}`).value(item.description);
+            sheet.cell(`B${row}`).value(item.amount);
+            sheet.cell(`C${row}`).value(item.category);
+            sheet.cell(`D${row}`).value(new Date(item.date).toLocaleDateString("en-US"));
+        });
 
         const filePath = path.join(__dirname, "../data/expenses.xlsx");
 
-        xlsx.writeFile(wb, filePath);
+        // Write the file
+        await workbook.toFileAsync(filePath);
 
         res.download(filePath, "expenses.xlsx", (err) => {
             if (err) {

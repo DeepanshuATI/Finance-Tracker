@@ -210,14 +210,13 @@ export const downloadIncomeExcel = asyncHandler(async (req, res) => {
 
 */}
 
-    
+
 import Income from "../models/income.model.js";
 import { User } from "../models/user.model.js";
 import mongoose from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// Add Income
-// Add Income
+
 export const addIncome = asyncHandler(async (req, res) => {
   try {
     const { icon, amount, source, date, description } = req.body;
@@ -346,7 +345,7 @@ export const deleteIncome = async (req, res) => {
 };
 
 // Download Income as Excel
-import xlsx from "xlsx";
+import XlsxPopulate from "xlsx-populate";
 import path from "path";
 import fs from "fs"; // Import the File System module
 import { fileURLToPath } from "url";
@@ -363,18 +362,24 @@ export const downloadIncomeExcel = asyncHandler(async (req, res) => {
     // Fetch income data for the user
     const incomes = await Income.find({ user: userId }).sort({ date: -1 });
 
-    // Map data for Excel file
-    const data = incomes.map((item) => ({
-      Source: item.source,
-      Amount: item.amount,
-      Date: new Date(item.date).toLocaleDateString("en-US"),
-      Description: item.description,
-    }));
+    // Create a new workbook
+    const workbook = await XlsxPopulate.fromBlankAsync();
+    const sheet = workbook.sheet(0);
 
-    // Create Excel workbook and worksheet
-    const workbook = xlsx.utils.book_new();
-    const worksheet = xlsx.utils.json_to_sheet(data);
-    xlsx.utils.book_append_sheet(workbook, worksheet, "Income");
+    // Set headers
+    sheet.cell("A1").value("Source");
+    sheet.cell("B1").value("Amount");
+    sheet.cell("C1").value("Date");
+    sheet.cell("D1").value("Description");
+
+    // Add data rows
+    incomes.forEach((item, index) => {
+      const row = index + 2;
+      sheet.cell(`A${row}`).value(item.source);
+      sheet.cell(`B${row}`).value(item.amount);
+      sheet.cell(`C${row}`).value(new Date(item.date).toLocaleDateString("en-US"));
+      sheet.cell(`D${row}`).value(item.description);
+    });
 
     // Define the file path
     const filePath = path.join(__dirname, "../data/income.xlsx");
@@ -386,7 +391,7 @@ export const downloadIncomeExcel = asyncHandler(async (req, res) => {
     }
 
     // Write the file to disk
-    xlsx.writeFile(workbook, filePath);
+    await workbook.toFileAsync(filePath);
 
     // Serve the file and delete it after download
     res.download(filePath, "Income_details.xlsx", (err) => {
@@ -408,5 +413,5 @@ export const downloadIncomeExcel = asyncHandler(async (req, res) => {
 
 
 
-    
-    
+
+
