@@ -6,7 +6,7 @@ const securityDemoSchema = new mongoose.Schema({
     enum: ['user', 'comment'],
     required: true
   },
-  username: {
+  email: {
     type: String,
     sparse: true
   },

@@ -7,7 +7,7 @@ import { sanitizeInput } from '../utils/sanitize.util.js';
  */
 export const vulnerableLogin = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
     
     // ❌ VULNERABLE: Using eval or direct object construction allows injection
     // This simulates SQL injection in a NoSQL context
@@ -16,22 +16,22 @@ export const vulnerableLogin = async (req, res) => {
       // Attempt to evaluate the input (DANGEROUS!)
       query = {
         type: 'user',
-        username: username,
+        email: email,
         password: password
       };
       
-      // If username contains MongoDB operators like {$ne: null}, it will work
-      if (typeof username === 'object' || typeof password === 'object') {
+      // If email contains MongoDB operators like {$ne: null}, it will work
+      if (typeof email === 'object' || typeof password === 'object') {
         query = {
           type: 'user',
-          ...username,
+          ...email,
           ...password
         };
       }
     } catch (e) {
       query = {
         type: 'user',
-        username: username,
+        email: email,
         password: password
       };
     }
@@ -45,7 +45,7 @@ export const vulnerableLogin = async (req, res) => {
         success: true,
         message: '✅ Login Successful (HACKED)',
         user: {
-          username: user.username
+          email: user.email
         },
         warning: '⚠️ This login was vulnerable to NoSQL Injection'
       });
@@ -123,15 +123,15 @@ export const seedSecurityData = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: 'Security demo data already exists',
-        users: existingUsers.map(u => ({ username: u.username }))
+        users: existingUsers.map(u => ({ email: u.email }))
       });
     }
     
     // Create sample users
     const sampleUsers = [
-      { type: 'user', username: 'admin', password: 'admin123' },
-      { type: 'user', username: 'user', password: 'password123' },
-      { type: 'user', username: 'test', password: 'test123' }
+      { type: 'user', email: 'admin@demo.com', password: 'admin123' },
+      { type: 'user', email: 'user@demo.com', password: 'password123' },
+      { type: 'user', email: 'test@demo.com', password: 'test123' }
     ];
     
     const createdUsers = await SecurityDemo.insertMany(sampleUsers);
@@ -142,7 +142,7 @@ export const seedSecurityData = async (req, res) => {
       success: true,
       message: 'Security demo data seeded successfully',
       count: createdUsers.length,
-      users: createdUsers.map(u => ({ username: u.username }))
+      users: createdUsers.map(u => ({ email: u.email }))
     });
   } catch (error) {
     console.error('Seed data error:', error);
@@ -160,18 +160,18 @@ export const seedSecurityData = async (req, res) => {
  */
 export const secureLogin = async (req, res) => {
   try {
-    let { username, password } = req.body;
+    let { email, password } = req.body;
     
     // ✅ SECURE: Input validation
-    if (!username || !password) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Username and password are required'
+        message: 'Email and password are required'
       });
     }
     
     // ✅ SECURE: Type checking - only accept strings
-    if (typeof username !== 'string' || typeof password !== 'string') {
+    if (typeof email !== 'string' || typeof password !== 'string') {
       return res.status(400).json({
         success: false,
         message: 'Invalid input format'
@@ -179,7 +179,7 @@ export const secureLogin = async (req, res) => {
     }
     
     // ✅ SECURE: Length validation
-    if (username.length > 50 || password.length > 50) {
+    if (email.length > 100 || password.length > 50) {
       return res.status(400).json({
         success: false,
         message: 'Input too long'
@@ -190,7 +190,7 @@ export const secureLogin = async (req, res) => {
     // This prevents NoSQL injection
     const user = await SecurityDemo.findOne({
       type: 'user',
-      username: username,
+      email: email,
       password: password
     });
     
@@ -201,7 +201,7 @@ export const secureLogin = async (req, res) => {
         success: true,
         message: '✅ Secure Login Success',
         user: {
-          username: user.username
+          email: user.email
         },
         security: '🔒 This login is protected against NoSQL Injection'
       });

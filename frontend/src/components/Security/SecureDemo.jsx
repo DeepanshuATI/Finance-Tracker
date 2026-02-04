@@ -4,7 +4,7 @@ import { Shield, Copy, ArrowLeft, CheckCircle } from 'lucide-react';
 import axios from 'axios';
 
 const SecureDemo = () => {
-  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [commentData, setCommentData] = useState('');
   const [loginResult, setLoginResult] = useState(null);
   const [commentResult, setCommentResult] = useState(null);
@@ -95,14 +95,14 @@ const SecureDemo = () => {
             <form onSubmit={handleSecureLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
+                  Email
                 </label>
                 <input
                   type="text"
-                  value={loginData.username}
-                  onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                  value={loginData.email}
+                  onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                  placeholder="Enter username"
+                  placeholder="Enter email"
                 />
               </div>
 

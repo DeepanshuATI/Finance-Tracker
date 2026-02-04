@@ -4,7 +4,7 @@ import { AlertTriangle, Copy, ArrowLeft } from 'lucide-react';
 import axios from 'axios';
 
 const VulnerableDemo = () => {
-  const [loginData, setLoginData] = useState({ username: '', password: '' });
+  const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [commentData, setCommentData] = useState('');
   const [loginResult, setLoginResult] = useState(null);
   const [commentResult, setCommentResult] = useState(null);
@@ -96,14 +96,14 @@ const VulnerableDemo = () => {
             <form onSubmit={handleVulnerableLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Username
+                  Email
                 </label>
                 <input
                   type="text"
-                  value={loginData.username}
-                  onChange={(e) => setLoginData({ ...loginData, username: e.target.value })}
+                  value={loginData.email}
+                  onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                  placeholder="Enter username"
+                  placeholder="Enter email"
                 />
               </div>
 
@@ -146,7 +146,7 @@ const VulnerableDemo = () => {
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-2">
-                Paste this in the username field to bypass authentication
+                Paste this in the email field to bypass authentication
               </p>
             </div>
 
