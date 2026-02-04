@@ -83,20 +83,19 @@ function Expense() {
        
 const deleteExpense = async (id) => {
   try {
-    
     await axiosInstance.delete(API_PATHS.EXPENSE.DELETE_EXPENSE(id), {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('accessToken')}`, 
       },
     });
 
-    
-    setOpenDeleteAlert({ show: true, data: id });
+    // Close the delete alert modal
+    setOpenDeleteAlert({ show: false, data: null });
 
-    
+    // Show success message
     toast.success("Expense details deleted successfully");
 
-    
+    // Refresh the expense list
     fetchExpenseDetails();
   } catch (error) {
     console.error(
@@ -156,7 +155,7 @@ const deleteExpense = async (id) => {
             <ExpenseList  
                transactions={expenseData}
                onDelete={(id) => {
-                setOpenDeleteAlert({ show: true, date: id})
+                setOpenDeleteAlert({ show: true, data: id})
                }}
                onDownload={handleDownloadExpenseDetails}
             />   
@@ -172,11 +171,11 @@ const deleteExpense = async (id) => {
 
           <Model
           isOpen={openDeleteAlert.show}
-          onClose={() => setOpenDeleteAlert({ show: false, date: null})}
+          onClose={() => setOpenDeleteAlert({ show: false, data: null})}
           title="Delete Expense"
         >
           <DeleteAlert 
-            content="Are you sure you wnat to delete this expense details?"
+            content="Are you sure you want to delete this expense details?"
             onDelete={() => deleteExpense(openDeleteAlert.data)}
           />
         </Model>
